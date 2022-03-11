@@ -23,12 +23,18 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
-  int _actualPageNumber = 1, _allPagesCount = 0;
+  int _actualPageNumber = 1, _allPagesCount = 1;
   final String title;
-  final pdfController = PdfController(
+
+  final pdfPinchController = PdfControllerPinch(
     document: PdfDocument.openAsset('assets/esame.pdf'),
     //initialPage: 3,
   );
+
+  /* final pdfController = PdfController(
+    document: PdfDocument.openAsset('assets/esame.pdf'),
+    //initialPage: 3,
+  );*/
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -42,6 +48,69 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Center(
+            child: PdfViewPinch(
+              controller: widget.pdfPinchController,
+              onDocumentLoaded: (document) {
+                setState(() {
+                  widget._allPagesCount = document.pagesCount;
+                });
+              },
+              onPageChanged: (page) {
+                setState(() {
+                  widget._actualPageNumber = page;
+                });
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                child: Text(" - "),
+                onPressed: () {
+                  //widget.pdfController.jumpToPage(2);
+                  //  -- or --
+                  widget.pdfPinchController.animateToPage(
+                      pageNumber: (widget._actualPageNumber > 1)
+                          ? --widget._actualPageNumber
+                          : 1,
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.ease);
+                },
+              ),
+              Text("Page: " +
+                  widget._actualPageNumber.toString() +
+                  "/" +
+                  widget._allPagesCount.toString()),
+              ElevatedButton(
+                child: Text(" + "),
+                onPressed: () {
+                  //widget.pdfController.jumpToPage(2);
+                  //  -- or --
+                  widget.pdfPinchController.animateToPage(
+                      pageNumber:
+                          (widget._actualPageNumber < widget._allPagesCount)
+                              ? ++widget._actualPageNumber
+                              : widget._allPagesCount,
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.ease);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    ); // End First Return
+
+/*    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
           Center(
             child: PdfView(
@@ -59,40 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              /*RaisedButton(
-                child: Text("Page 1"),
-                onPressed: () {
-                  //widget.pdfController.jumpToPage(2);
-                  //  -- or --
-                  widget.pdfController.animateToPage(1,
-                      duration: Duration(milliseconds: 250),
-                      curve: Curves.ease);
-                },
-              ),
-              RaisedButton(
-                child: Text("Page 3"),
-                onPressed: () {
-                  //widget.pdfController.jumpToPage(3);
-                  //  -- or --
-                  widget.pdfController.animateToPage(3,
-                      duration: Duration(seconds: 1), curve: Curves.linear);
-                },
-              ),*/
-              RaisedButton(
-                child: Text(" + "),
-                onPressed: () {
-                  //widget.pdfController.jumpToPage(2);
-                  //  -- or --
-                  widget.pdfController.animateToPage(
-                      (widget._actualPageNumber < widget._allPagesCount)
-                          ? ++widget._actualPageNumber
-                          : widget._allPagesCount,
-                      duration: Duration(milliseconds: 250),
-                      curve: Curves.ease);
-                },
-              ),
-              RaisedButton(
+              ElevatedButton(
                 child: Text(" - "),
                 onPressed: () {
                   //widget.pdfController.jumpToPage(2);
@@ -109,10 +147,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   widget._actualPageNumber.toString() +
                   "/" +
                   widget._allPagesCount.toString()),
+              ElevatedButton(
+                child: Text(" + "),
+                onPressed: () {
+                  //widget.pdfController.jumpToPage(2);
+                  //  -- or --
+                  widget.pdfController.animateToPage(
+                      (widget._actualPageNumber < widget._allPagesCount)
+                          ? ++widget._actualPageNumber
+                          : widget._allPagesCount,
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.ease);
+                },
+              ),
             ],
           ),
         ],
       ),
-    );
+    ); // End Second return */
   }
 }
