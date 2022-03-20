@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
+import 'pdfpinchview.dart';
+import 'pdfview.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,11 +18,55 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Pdf View Demo'),
+      //home: MyHomePage(title: 'Flutter Pdf View Demo'),
+      //home: pdfVerticalView(),
+      //home: pdfOrizontalView(),
+      routes: mainRouting(),
+    );
+  }
+
+  Map<String, WidgetBuilder> mainRouting() {
+    return {
+      '/': (context) => HomePage(),
+      '/verticalview': (context) => pdfVerticalView(),
+      '/orizontalview': (context) => pdfOrizontalView(),
+    };
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Pdf View Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              child: const Text('Go to the Vertical View'),
+              onPressed: () {
+                Navigator.pushNamed(context, '/verticalview');
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Go to the Orizontal View'),
+              onPressed: () {
+                Navigator.pushNamed(context, '/orizontalview');
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
+/*
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
   int _actualPageNumber = 1, _allPagesCount = 1;
@@ -104,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     ); // End First Return
-
+*/
 /*    return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -165,5 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     ); // End Second return */
+/*  
   }
 }
+*/
