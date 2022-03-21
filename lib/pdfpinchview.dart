@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 
@@ -15,11 +17,26 @@ class pdfVerticalView extends StatefulWidget {
 }
 
 class _pdfVerticalViewState extends State<pdfVerticalView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: this._scaffoldKey,
       appBar: AppBar(
         title: const Text("Vertical Scroll View"),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => this._scaffoldKey.currentState?.showBottomSheet(
+                  (ctx) => _buildBottomSheet(ctx),
+                ),
+            /*onPressed: () => showModalBottomSheet(
+              context: context,
+              builder: (ctx) => _buildBottomSheet(ctx),
+            ),*/
+            icon: const Icon(Icons.search),
+            tooltip: 'Go To',
+          )
+        ],
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
@@ -39,45 +56,39 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
               },
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildPageNumberTextField(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    child: const Text(" - "),
-                    onPressed: () {
-                      //widget.pdfController.jumpToPage(2);
-                      //  -- or --
-                      widget.pdfPinchController.animateToPage(
-                          pageNumber: (widget._actualPageNumber > 1)
-                              ? --widget._actualPageNumber
-                              : 1,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.ease);
-                    },
-                  ),
-                  Text("Page: " +
-                      widget._actualPageNumber.toString() +
-                      "/" +
-                      widget._allPagesCount.toString()),
-                  ElevatedButton(
-                    child: const Text(" + "),
-                    onPressed: () {
-                      //widget.pdfController.jumpToPage(2);
-                      //  -- or --
-                      widget.pdfPinchController.animateToPage(
-                          pageNumber:
-                              (widget._actualPageNumber < widget._allPagesCount)
-                                  ? ++widget._actualPageNumber
-                                  : widget._allPagesCount,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.ease);
-                    },
-                  ),
-                ],
+              ElevatedButton(
+                child: const Text(" - "),
+                onPressed: () {
+                  //widget.pdfController.jumpToPage(2);
+                  //  -- or --
+                  widget.pdfPinchController.animateToPage(
+                      pageNumber: (widget._actualPageNumber > 1)
+                          ? --widget._actualPageNumber
+                          : 1,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.ease);
+                },
+              ),
+              Text("Page: " +
+                  widget._actualPageNumber.toString() +
+                  "/" +
+                  widget._allPagesCount.toString()),
+              ElevatedButton(
+                child: const Text(" + "),
+                onPressed: () {
+                  //widget.pdfController.jumpToPage(2);
+                  //  -- or --
+                  widget.pdfPinchController.animateToPage(
+                      pageNumber:
+                          (widget._actualPageNumber < widget._allPagesCount)
+                              ? ++widget._actualPageNumber
+                              : widget._allPagesCount,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.ease);
+                },
               ),
             ],
           ),
@@ -86,13 +97,25 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
     );
   }
 
+  Container _buildBottomSheet(BuildContext context) {
+    return Container(
+      //height: 300,
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue, width: 2.0),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: _buildPageNumberTextField(),
+    );
+  }
+
   Widget _buildPageNumberTextField() {
     return TextField(
       keyboardType: TextInputType.number,
       style: Theme.of(context).textTheme.bodyText1,
       decoration: const InputDecoration(
-        icon: Icon(Icons.search),
-        labelText: 'Go To:',
+        //icon: Icon(Icons.search),
+        labelText: 'Go To Page:',
         border: OutlineInputBorder(),
       ),
       onSubmitted: (val) {
@@ -106,6 +129,7 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
         setState(() {
           widget._actualPageNumber = widget._searchpage;
         });
+        Navigator.pop(context);
       },
     );
   }
