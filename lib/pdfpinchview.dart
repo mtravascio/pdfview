@@ -3,7 +3,7 @@ import 'package:pdfx/pdfx.dart';
 
 class pdfVerticalView extends StatefulWidget {
   pdfVerticalView({Key? key}) : super(key: key);
-  int _actualPageNumber = 1, _allPagesCount = 1;
+  int _actualPageNumber = 1, _allPagesCount = 1, _searchpage = 1;
 
   final pdfPinchController = PdfControllerPinch(
     document: PdfDocument.openAsset('assets/esame.pdf'),
@@ -39,44 +39,74 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ElevatedButton(
-                child: const Text(" - "),
-                onPressed: () {
-                  //widget.pdfController.jumpToPage(2);
-                  //  -- or --
-                  widget.pdfPinchController.animateToPage(
-                      pageNumber: (widget._actualPageNumber > 1)
-                          ? --widget._actualPageNumber
-                          : 1,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
-                },
-              ),
-              Text("Page: " +
-                  widget._actualPageNumber.toString() +
-                  "/" +
-                  widget._allPagesCount.toString()),
-              ElevatedButton(
-                child: const Text(" + "),
-                onPressed: () {
-                  //widget.pdfController.jumpToPage(2);
-                  //  -- or --
-                  widget.pdfPinchController.animateToPage(
-                      pageNumber:
-                          (widget._actualPageNumber < widget._allPagesCount)
-                              ? ++widget._actualPageNumber
-                              : widget._allPagesCount,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
-                },
+              _buildPageNumberTextField(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    child: const Text(" - "),
+                    onPressed: () {
+                      //widget.pdfController.jumpToPage(2);
+                      //  -- or --
+                      widget.pdfPinchController.animateToPage(
+                          pageNumber: (widget._actualPageNumber > 1)
+                              ? --widget._actualPageNumber
+                              : 1,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.ease);
+                    },
+                  ),
+                  Text("Page: " +
+                      widget._actualPageNumber.toString() +
+                      "/" +
+                      widget._allPagesCount.toString()),
+                  ElevatedButton(
+                    child: const Text(" + "),
+                    onPressed: () {
+                      //widget.pdfController.jumpToPage(2);
+                      //  -- or --
+                      widget.pdfPinchController.animateToPage(
+                          pageNumber:
+                              (widget._actualPageNumber < widget._allPagesCount)
+                                  ? ++widget._actualPageNumber
+                                  : widget._allPagesCount,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.ease);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPageNumberTextField() {
+    return TextField(
+      keyboardType: TextInputType.number,
+      style: Theme.of(context).textTheme.bodyText1,
+      decoration: const InputDecoration(
+        icon: Icon(Icons.search),
+        labelText: 'Go To:',
+        border: OutlineInputBorder(),
+      ),
+      onSubmitted: (val) {
+        widget._searchpage = int.parse(val);
+        if (widget._searchpage < 1) {
+          widget._searchpage = 1;
+        } else if (widget._searchpage > widget._allPagesCount) {
+          widget._searchpage = widget._allPagesCount;
+        }
+        widget.pdfPinchController.jumpToPage(widget._searchpage - 1);
+        setState(() {
+          widget._actualPageNumber = widget._searchpage;
+        });
+      },
     );
   }
 }
