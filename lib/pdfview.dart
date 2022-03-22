@@ -48,12 +48,15 @@ class _pdfOrizontalViewState extends State<pdfOrizontalView> {
                 onPressed: () {
                   //widget.pdfController.jumpToPage(2);
                   //  -- or --
-                  widget.pdfController.animateToPage(
+                  /*widget.pdfController.animateToPage(
                       (widget._actualPageNumber > 1)
                           ? --widget._actualPageNumber
                           : 1,
                       duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
+                      curve: Curves.ease);*/
+                  widget.pdfController.previousPage(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeOut);
                 },
               ),
               Text("Page: " +
@@ -65,12 +68,15 @@ class _pdfOrizontalViewState extends State<pdfOrizontalView> {
                 onPressed: () {
                   //widget.pdfController.jumpToPage(2);
                   //  -- or --
-                  widget.pdfController.animateToPage(
+                  /*widget.pdfController.animateToPage(
                       (widget._actualPageNumber < widget._allPagesCount)
                           ? ++widget._actualPageNumber
                           : widget._allPagesCount,
                       duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
+                      curve: Curves.ease);*/
+                  widget.pdfController.nextPage(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeIn);
                 },
               ),
             ],
