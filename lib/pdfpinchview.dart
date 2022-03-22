@@ -1,11 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 
 class pdfVerticalView extends StatefulWidget {
   pdfVerticalView({Key? key}) : super(key: key);
-  int _actualPageNumber = 1, _allPagesCount = 1, _searchpage = 1;
+  int _actualPageNumber = 1, _allPagesCount = 0, _searchpage = 1;
+
+  //final document= await PdfDocument.openAsset('assets/esame.pdf');
 
   final pdfPinchController = PdfControllerPinch(
     document: PdfDocument.openAsset('assets/esame.pdf'),
@@ -23,8 +23,22 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
     return Scaffold(
       key: this._scaffoldKey,
       appBar: AppBar(
-        title: const Text("Vertical Scroll View"),
+        title: const Text("Vertical View"),
         actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                widget.pdfPinchController.previousPage(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOut);
+              },
+              icon: const Icon(Icons.arrow_back)),
+          IconButton(
+              onPressed: () {
+                widget.pdfPinchController.nextPage(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeIn);
+              },
+              icon: const Icon(Icons.arrow_forward)),
           IconButton(
             onPressed: () => this._scaffoldKey.currentState?.showBottomSheet(
                   (ctx) => _buildBottomSheet(ctx),
@@ -59,37 +73,61 @@ class _pdfVerticalViewState extends State<pdfVerticalView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ElevatedButton(
+//----------------------------------------------------------------------
+/*              ElevatedButton(
                 child: const Text(" - "),
                 onPressed: () {
                   //widget.pdfController.jumpToPage(2);
                   //  -- or --
-                  widget.pdfPinchController.animateToPage(
+                  /*widget.pdfPinchController.animateToPage(
                       pageNumber: (widget._actualPageNumber > 1)
                           ? --widget._actualPageNumber
                           : 1,
                       duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
+                      curve: Curves.ease);*/
+                  widget.pdfPinchController.previousPage(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeOut);
                 },
-              ),
-              Text("Page: " +
+              ),*/
+//----------------------------------------------------------------------
+              /*Text("Page: " +
                   widget._actualPageNumber.toString() +
                   "/" +
-                  widget._allPagesCount.toString()),
-              ElevatedButton(
+                  widget._allPagesCount.toString()),*/
+//----------------------------------------------------------------------
+              PdfPageNumber(
+                controller: widget.pdfPinchController,
+                // When `loadingState != PdfLoadingState.success`  `pagesCount` equals null_
+                builder: (_, state, loadingState, pagesCount) => Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    "Page: " +
+                        widget._actualPageNumber.toString() +
+                        "/${pagesCount ?? 0}",
+                    //style: const TextStyle(fontSize: 22),
+                  ),
+                ),
+              ),
+//----------------------------------------------------------------------
+/*              ElevatedButton(
                 child: const Text(" + "),
                 onPressed: () {
                   //widget.pdfController.jumpToPage(2);
                   //  -- or --
-                  widget.pdfPinchController.animateToPage(
+                  /*widget.pdfPinchController.animateToPage(
                       pageNumber:
                           (widget._actualPageNumber < widget._allPagesCount)
                               ? ++widget._actualPageNumber
                               : widget._allPagesCount,
                       duration: const Duration(milliseconds: 250),
-                      curve: Curves.ease);
+                      curve: Curves.ease);*/
+                  widget.pdfPinchController.nextPage(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeIn);
                 },
-              ),
+              ),*/
+//----------------------------------------------------------------------
             ],
           ),
         ],
